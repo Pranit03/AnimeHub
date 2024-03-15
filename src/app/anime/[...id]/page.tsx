@@ -12,34 +12,33 @@ export default function AnimeProfilePage({
     id: string;
   };
 }) {
-  const [animeData, setAnimeData] = useState();
+  const [animeData, setAnimeData] = useState(null);
   const [translatedDescription, setTranslatedDescription] =
-    useState<String>("");
+    useState<string>("");
+
+  const fetchAnimeByIdFun = async (id: string) => {
+    const data = await fetchAnimeById(id);
+    setAnimeData(data);
+    return data;
+  };
+
+  const fetchAnimeDescription = async (
+    description: string
+  ): Promise<string> => {
+    const translatedDescription = await getTranslation(description);
+    const { translatedText } = translatedDescription.data.translations;
+    setTranslatedDescription(translatedText);
+    return translatedText;
+  };
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const data = await fetchAnimeById(params.id);
-        setAnimeData(data);
-        const translatedDesc = await Translate(data?.description);
-        setTranslatedDescription(translatedDesc);
-      } catch (error) {
-        console.error("Error fetching anime data:", error);
-      }
+      const anime = await fetchAnimeByIdFun(params.id);
+      await fetchAnimeDescription(anime.description);
     };
 
     fetchData();
   }, [params.id]);
-
-  const Translate = async (data: string) => {
-    try {
-      const translatedData = await getTranslation(data);
-      return translatedData;
-    } catch (error) {
-      console.error("Error translating data:", error);
-      return "Translation not available";
-    }
-  };
 
   return (
     <>
@@ -51,17 +50,19 @@ export default function AnimeProfilePage({
                 {animeData?.name}
               </h2>
               <p className="font-mono text-xl font-light">
-                {animeData?.kind} | Total Episodes {animeData?.episodes}
+                {animeData.kind} | Total Episodes {animeData.episodes}
               </p>
               <hr className="border w-full border-gray-700" />
               <h3 className="font-mono text-2xl font-light">Description</h3>
-              <p className="font-mono text-base font-extralight text-justify">
-                {translatedDescription || animeData?.description}
+              <p className="font-mono text-base text-justify font-extralight">
+                {translatedDescription !== ""
+                  ? translatedDescription
+                  : animeData.description}
               </p>
             </div>
             <div className="flex">
               <img
-                src={`https://shikimori.one/${animeData?.image.original}`}
+                src={`https://shikimori.one/${animeData.image.original}`}
                 alt="anime-pic"
                 className="w-[300px]"
               />
