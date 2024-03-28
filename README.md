@@ -1,3 +1,7 @@
+## AnimeHub 
+
+Only site you need to view all popular and trending #Hentai # for FREE 
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
